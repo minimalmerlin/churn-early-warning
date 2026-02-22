@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(PROJ=\"/Users/merlinmechler/Library/Mobile Documents/com~apple~CloudDocs/Data Analysis/Churn Warning System + Playbook Generator\")",
+      "Bash(\"$PROJ/venv_churn/bin/pip\" install pandas==2.2.3 pydantic==2.10.6 pytest==8.3.5 pytest-cov==6.0.0)"
+    ]
+  }
+}

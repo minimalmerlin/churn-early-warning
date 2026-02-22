@@ -1,0 +1,14 @@
+# Churn Early Warning + Playbook Generator
+# Pinned Versions für reproduzierbare Builds (Security Best Practice)
+
+# --- Data Layer ---
+pandas==2.2.3
+pydantic==2.10.6
+
+# --- Testing ---
+pytest==8.3.5
+pytest-cov==6.0.0
+
+# --- Code Quality ---
+ruff==0.9.9
+mypy==1.14.1
