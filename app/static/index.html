@@ -3,43 +3,56 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Churn Early Warning System</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <title>Churn Early Warning</title>
   <style>
     /* ------------------------------------------------------------------ */
-    /* Design System: Notion-inspiriertes Light Theme                       */
+    /* Design System: Apple HIG – Farben, Typo, Radius, Schatten           */
     /* ------------------------------------------------------------------ */
     :root {
-      --bg:              #F7F7F5;
-      --page:            #FFFFFF;
-      --border:          #E9E9E8;
-      --border-hover:    #CFCFCA;
-      --text:            #37352F;
-      --text-secondary:  #6B6B6B;
-      --text-muted:      #9B9A97;
-      --accent:          #2383E2;
-      --accent-hover:    #1A72C7;
-      --accent-light:    #EDF3FB;
+      /* Hintergründe */
+      --bg:          #FBFBFD;
+      --surface:     #FFFFFF;
+      --surface-2:   #F5F5F7;
 
-      /* Notion Tag-Farbpalette */
-      --tag-critical-bg:   #FFE2DD;
-      --tag-critical-text: #C0392B;
-      --tag-high-bg:       #FDECC8;
-      --tag-high-text:     #D9730D;
-      --tag-medium-bg:     #FBF3DB;
-      --tag-medium-text:   #B8860B;
-      --tag-low-bg:        #DBEDDB;
-      --tag-low-text:      #3D8B60;
-      --tag-segment-bg:    #E8E8E5;
-      --tag-segment-text:  #6B6B6B;
+      /* Text */
+      --text:        #1D1D1F;
+      --text-2:      #6E6E73;
+      --text-3:      #86868B;
 
-      --font:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-mono: 'SFMono-Regular', 'Consolas', 'Liberation Mono', monospace;
-      --radius:  6px;
-      --shadow:  0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-      --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
+      /* Akzent */
+      --blue:        #0071E3;
+      --blue-hover:  #0077ED;
+      --blue-light:  #E8F0FB;
+
+      /* Apple Systemfarben */
+      --red:         #FF3B30;
+      --red-bg:      #FFF1F0;
+      --orange:      #FF9F0A;
+      --orange-bg:   #FFF8EC;
+      --yellow:      #C07A00;
+      --yellow-bg:   #FFFBE6;
+      --green:       #1B8A45;
+      --green-bg:    #F0FAF4;
+
+      /* Struktur */
+      --border:      rgba(0, 0, 0, 0.08);
+      --border-2:    rgba(0, 0, 0, 0.12);
+      --shadow-sm:   0 1px 4px rgba(0,0,0,0.06), 0 0 1px rgba(0,0,0,0.04);
+      --shadow:      0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+      --shadow-lg:   0 12px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+
+      --r-sm:   8px;
+      --r:      14px;
+      --r-lg:   18px;
+      --r-xl:   22px;
+
+      /* Schrift: SF Pro Stack */
+      --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display',
+              'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'SF Mono', 'SFMono-Regular', ui-monospace,
+                   'Cascadia Code', 'Fira Code', monospace;
+
+      --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -48,245 +61,264 @@
       background: var(--bg);
       color: var(--text);
       font-family: var(--font);
-      font-size: 14px;
-      line-height: 1.6;
+      font-size: 15px;
+      line-height: 1.55;
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     /* ------------------------------------------------------------------ */
-    /* Top Navigation                                                       */
+    /* Navigation Bar (Frosted Glass)                                      */
     /* ------------------------------------------------------------------ */
-    .topbar {
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid var(--border);
-      padding: 0 24px;
-      height: 48px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .nav {
       position: sticky;
       top: 0;
-      z-index: 100;
-    }
-    .topbar-breadcrumb {
+      z-index: 200;
+      height: 52px;
+      background: rgba(251, 251, 253, 0.85);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
-      gap: 6px;
-      color: var(--text-muted);
-      font-size: 13px;
+      padding: 0 24px;
+      gap: 10px;
     }
-    .topbar-breadcrumb span { color: var(--text-secondary); font-weight: 500; }
-    .topbar-sep { color: var(--border-hover); }
-
-    /* ------------------------------------------------------------------ */
-    /* Page Layout                                                          */
-    /* ------------------------------------------------------------------ */
-    .page-wrapper {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 0 24px 80px;
-    }
-
-    /* ------------------------------------------------------------------ */
-    /* Page Header (Notion-Style)                                           */
-    /* ------------------------------------------------------------------ */
-    .page-header {
-      padding: 48px 0 32px;
-    }
-    .page-icon { font-size: 48px; margin-bottom: 12px; display: block; }
-    .page-title {
-      font-size: 32px;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-      margin-bottom: 8px;
-    }
-    .page-subtitle {
-      font-size: 14px;
-      color: var(--text-muted);
-    }
-
-    /* ------------------------------------------------------------------ */
-    /* Section Divider                                                      */
-    /* ------------------------------------------------------------------ */
-    .section { margin-bottom: 36px; }
-
-    .section-label {
-      font-size: 11px;
+    .nav-logo {
+      font-size: 15px;
       font-weight: 600;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      color: var(--text);
+      letter-spacing: -0.01em;
     }
-    .section-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
+    .nav-divider {
+      width: 1px;
+      height: 14px;
+      background: var(--border-2);
+    }
+    .nav-sub {
+      font-size: 13px;
+      color: var(--text-3);
     }
 
     /* ------------------------------------------------------------------ */
-    /* Callout / Upload Zone                                                */
+    /* Page Layout                                                         */
     /* ------------------------------------------------------------------ */
-    .upload-callout {
-      background: var(--page);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 32px;
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Hero Header                                                         */
+    /* ------------------------------------------------------------------ */
+    .hero {
+      text-align: center;
+      padding: 72px 0 56px;
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 14px;
+    }
+    .hero-title {
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.1;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .hero-sub {
+      font-size: 17px;
+      color: var(--text-2);
+      line-height: 1.5;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Section                                                             */
+    /* ------------------------------------------------------------------ */
+    .section { margin-bottom: 48px; }
+    .section-title {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Upload Card                                                         */
+    /* ------------------------------------------------------------------ */
+    .card {
+      background: var(--surface);
+      border-radius: var(--r-xl);
       box-shadow: var(--shadow);
+      padding: 32px;
     }
 
     .upload-zone {
-      border: 1.5px dashed var(--border-hover);
-      border-radius: var(--radius);
-      padding: 36px 24px;
+      border: 1.5px dashed var(--border-2);
+      border-radius: var(--r-lg);
+      background: var(--surface-2);
+      padding: 44px 32px;
       text-align: center;
       cursor: pointer;
-      transition: border-color 120ms ease, background 120ms ease;
-      background: var(--bg);
+      transition: border-color 180ms var(--ease),
+                  background 180ms var(--ease);
     }
     .upload-zone:hover, .upload-zone.drag-over {
-      border-color: var(--accent);
-      background: var(--accent-light);
+      border-color: var(--blue);
+      background: var(--blue-light);
     }
-    .upload-zone .upload-icon { font-size: 32px; margin-bottom: 10px; display: block; }
-    .upload-zone .upload-primary {
-      font-size: 14px;
-      font-weight: 500;
+    .upload-icon-wrap {
+      width: 56px;
+      height: 56px;
+      background: var(--surface);
+      border-radius: 14px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      margin: 0 auto 16px;
+    }
+    .upload-zone h3 {
+      font-size: 15px;
+      font-weight: 600;
       color: var(--text);
+      margin-bottom: 4px;
     }
-    .upload-zone .upload-hint {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 4px;
+    .upload-zone p {
+      font-size: 13px;
+      color: var(--text-3);
     }
-    .upload-zone .file-name {
+    .file-name-display {
       display: none;
-      margin-top: 10px;
+      margin-top: 12px;
       font-size: 13px;
       font-weight: 500;
-      color: var(--accent);
+      color: var(--blue);
       font-family: var(--font-mono);
     }
     #file-input { display: none; }
 
     /* ------------------------------------------------------------------ */
-    /* Buttons                                                              */
+    /* Buttons                                                             */
     /* ------------------------------------------------------------------ */
     .btn-row {
       display: flex;
-      gap: 8px;
       align-items: center;
-      margin-top: 16px;
+      gap: 10px;
+      margin-top: 20px;
     }
-
     .btn {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 7px 14px;
-      border-radius: var(--radius);
-      border: 1px solid transparent;
+      gap: 7px;
+      padding: 9px 20px;
+      border-radius: 980px; /* Apple pill button */
+      border: none;
       cursor: pointer;
       font-family: var(--font);
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 500;
-      transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+      letter-spacing: -0.005em;
+      transition: background 150ms var(--ease),
+                  transform 100ms var(--ease),
+                  opacity 150ms var(--ease);
       text-decoration: none;
+      -webkit-user-select: none;
+      user-select: none;
     }
+    .btn:active { transform: scale(0.97); }
     .btn-primary {
-      background: var(--text);
-      color: #FFF;
-      border-color: var(--text);
+      background: var(--blue);
+      color: #fff;
     }
-    .btn-primary:hover:not(:disabled) {
-      background: #1a1a16;
-    }
+    .btn-primary:hover:not(:disabled) { background: var(--blue-hover); }
     .btn-primary:disabled {
-      background: var(--border-hover);
-      border-color: var(--border-hover);
-      color: var(--text-muted);
+      background: var(--surface-2);
+      color: var(--text-3);
       cursor: not-allowed;
+      transform: none;
     }
     .btn-secondary {
-      background: var(--page);
-      color: var(--text-secondary);
-      border-color: var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
     }
     .btn-secondary:hover {
-      background: var(--bg);
-      border-color: var(--border-hover);
-      color: var(--text);
+      background: #EBEBF0;
     }
 
     /* ------------------------------------------------------------------ */
-    /* Error Alert                                                          */
+    /* Error                                                               */
     /* ------------------------------------------------------------------ */
-    .error-callout {
+    .error-box {
       display: none;
-      margin-top: 12px;
+      margin-top: 14px;
       padding: 12px 16px;
-      background: #FFF5F5;
-      border: 1px solid #FECACA;
-      border-radius: var(--radius);
-      color: #C0392B;
+      background: var(--red-bg);
+      border: 1px solid rgba(255, 59, 48, 0.2);
+      border-radius: var(--r-sm);
+      color: var(--red);
       font-size: 13px;
+      font-weight: 500;
     }
 
     /* ------------------------------------------------------------------ */
-    /* KPI Cards                                                            */
+    /* KPI Cards                                                           */
     /* ------------------------------------------------------------------ */
-    .kpi-row {
+    .kpi-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
+      gap: 14px;
     }
-    @media (max-width: 640px) {
-      .kpi-row { grid-template-columns: repeat(2, 1fr); }
-    }
+    @media (max-width: 600px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
 
-    .kpi-card {
-      background: var(--page);
+    .kpi-tile {
+      background: var(--surface);
+      border-radius: var(--r-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 22px 20px 20px;
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px 20px;
-      box-shadow: var(--shadow);
     }
-    .kpi-card-label {
+    .kpi-tile-label {
       font-size: 11px;
       font-weight: 600;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.07em;
       text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 6px;
+      color: var(--text-3);
+      margin-bottom: 8px;
     }
-    .kpi-card-value {
-      font-size: 26px;
+    .kpi-tile-value {
+      font-size: 30px;
       font-weight: 700;
-      letter-spacing: -0.02em;
-      font-family: var(--font);
+      letter-spacing: -0.025em;
+      line-height: 1;
     }
-    .kpi-card.critical .kpi-card-value { color: var(--tag-critical-text); }
-    .kpi-card.high     .kpi-card-value { color: var(--tag-high-text); }
-    .kpi-card.arr      .kpi-card-value { color: var(--accent); }
-    .kpi-card.total    .kpi-card-value { color: var(--text); }
+    .kpi-tile.critical .kpi-tile-value { color: var(--red); }
+    .kpi-tile.high     .kpi-tile-value { color: var(--orange); }
+    .kpi-tile.arr      .kpi-tile-value { color: var(--blue); }
+    .kpi-tile.total    .kpi-tile-value { color: var(--text); }
 
     /* ------------------------------------------------------------------ */
-    /* Notion-Style Table                                                   */
+    /* Table                                                               */
     /* ------------------------------------------------------------------ */
-    .db-table-wrap {
-      background: var(--page);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
+    .table-card {
+      background: var(--surface);
+      border-radius: var(--r-lg);
       box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 1px solid var(--border);
     }
     table {
       width: 100%;
@@ -294,304 +326,321 @@
       font-size: 13px;
     }
     thead th {
-      padding: 9px 12px;
+      background: var(--surface-2);
+      padding: 11px 14px;
       text-align: left;
       font-size: 11px;
       font-weight: 600;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.07em;
       text-transform: uppercase;
-      color: var(--text-muted);
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
+      color: var(--text-3);
       white-space: nowrap;
+      border-bottom: 1px solid var(--border);
     }
     tbody tr {
       border-bottom: 1px solid var(--border);
-      transition: background 80ms ease;
       cursor: pointer;
+      transition: background 100ms var(--ease);
     }
     tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: #FAFAF9; }
-    tbody tr.selected { background: var(--accent-light); }
-    tbody td { padding: 10px 12px; vertical-align: middle; }
-    tbody td.rank {
-      color: var(--text-muted);
-      font-size: 12px;
-      font-family: var(--font-mono);
-      width: 36px;
-    }
-    tbody td.account-name { font-weight: 500; color: var(--text); }
-    tbody td.score { font-family: var(--font-mono); font-size: 13px; font-weight: 500; }
-    tbody td.arr { font-family: var(--font-mono); text-align: right; color: var(--text-secondary); }
+    tbody tr:hover { background: var(--surface-2); }
+    tbody tr.selected { background: var(--blue-light); }
+    tbody td { padding: 12px 14px; vertical-align: middle; }
+    td.rank { color: var(--text-3); font-family: var(--font-mono); font-size: 12px; width: 38px; }
+    td.account-name { font-weight: 500; }
+    td.score { font-family: var(--font-mono); font-weight: 600; }
+    td.arr { font-family: var(--font-mono); text-align: right; color: var(--text-2); }
     .table-hint {
-      margin-top: 8px;
+      margin-top: 10px;
       font-size: 12px;
-      color: var(--text-muted);
+      color: var(--text-3);
     }
 
     /* ------------------------------------------------------------------ */
-    /* Tags / Badges (Notion Palette)                                       */
+    /* Tags / Badges                                                       */
     /* ------------------------------------------------------------------ */
     .tag {
       display: inline-flex;
       align-items: center;
-      padding: 2px 8px;
-      border-radius: 4px;
+      padding: 3px 9px;
+      border-radius: 980px;
       font-size: 11px;
-      font-weight: 500;
+      font-weight: 600;
+      letter-spacing: 0.02em;
       white-space: nowrap;
     }
-    .tag-CRITICAL { background: var(--tag-critical-bg); color: var(--tag-critical-text); }
-    .tag-HIGH     { background: var(--tag-high-bg);     color: var(--tag-high-text); }
-    .tag-MEDIUM   { background: var(--tag-medium-bg);   color: var(--tag-medium-text); }
-    .tag-LOW      { background: var(--tag-low-bg);      color: var(--tag-low-text); }
-    .tag-segment  { background: var(--tag-segment-bg);  color: var(--tag-segment-text); font-family: var(--font-mono); font-size: 11px; }
+    .tag-CRITICAL { background: var(--red-bg);    color: var(--red); }
+    .tag-HIGH     { background: var(--orange-bg); color: var(--orange); }
+    .tag-MEDIUM   { background: var(--yellow-bg); color: var(--yellow); }
+    .tag-LOW      { background: var(--green-bg);  color: var(--green); }
+    .tag-segment  {
+      background: var(--surface-2);
+      color: var(--text-2);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      border: 1px solid var(--border);
+    }
 
     /* ------------------------------------------------------------------ */
-    /* Score Bar                                                            */
+    /* Score Bar                                                           */
     /* ------------------------------------------------------------------ */
     .score-wrap { display: flex; align-items: center; gap: 8px; }
     .score-bar {
       flex: 1;
-      height: 5px;
-      background: var(--border);
-      border-radius: 3px;
+      max-width: 60px;
+      height: 4px;
+      background: var(--surface-2);
+      border-radius: 2px;
       overflow: hidden;
-      max-width: 64px;
     }
-    .score-bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
-    .renewal-tag { font-size: 11px; color: var(--tag-high-text); font-family: var(--font-mono); }
+    .score-bar-fill { height: 100%; border-radius: 2px; transition: width 0.45s var(--ease); }
+    .renewal-tag { font-size: 11px; color: var(--orange); font-family: var(--font-mono); }
 
     /* ------------------------------------------------------------------ */
-    /* Playbook Panel                                                       */
+    /* Playbook                                                            */
     /* ------------------------------------------------------------------ */
-    .playbook-page {
-      background: var(--page);
+    .playbook-card {
+      background: var(--surface);
+      border-radius: var(--r-xl);
+      box-shadow: var(--shadow-lg);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-md);
       overflow: hidden;
     }
-
-    .playbook-top-bar {
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      padding: 12px 20px;
+    .playbook-nav {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
     }
-    .playbook-top-bar-title {
+    .playbook-nav-label {
       font-size: 12px;
       font-weight: 600;
-      color: var(--text-muted);
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
+      color: var(--text-3);
     }
     .btn-close {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--text-muted);
-      font-size: 18px;
-      padding: 2px 6px;
-      border-radius: 4px;
-      transition: background 100ms ease, color 100ms ease;
-      line-height: 1;
-    }
-    .btn-close:hover { background: var(--border); color: var(--text); }
-
-    .playbook-content { padding: 28px 32px; }
-    .playbook-account { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .playbook-summary { font-size: 13px; color: var(--text-secondary); line-height: 1.6; max-width: 680px; margin-bottom: 24px; }
-
-    /* KPI Properties (Notion-style property row) */
-    .kpi-properties {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      margin-bottom: 28px;
-    }
-    .kpi-prop {
-      flex: 1;
-      min-width: 140px;
-      padding: 14px 18px;
-      border-right: 1px solid var(--border);
-    }
-    .kpi-prop:last-child { border-right: none; }
-    .kpi-prop-label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-    }
-    .kpi-prop-value {
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-    }
-    .kpi-prop-value.danger { color: var(--tag-critical-text); }
-    .kpi-prop-value.success { color: var(--tag-low-text); }
-
-    /* Action Items */
-    .action-section-label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: var(--text-muted);
-      margin-bottom: 10px;
-    }
-    .action-list { display: flex; flex-direction: column; gap: 8px; }
-    .action-item {
-      display: grid;
-      grid-template-columns: 28px 1fr auto;
-      gap: 12px;
-      align-items: start;
-      padding: 14px 16px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      transition: border-color 100ms ease, box-shadow 100ms ease;
-    }
-    .action-item:hover {
-      border-color: var(--border-hover);
-      box-shadow: var(--shadow);
-    }
-    .action-num {
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      background: var(--bg);
+      background: var(--border);
+      border: none;
+      cursor: pointer;
+      color: var(--text-2);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 120ms var(--ease);
+      line-height: 1;
+    }
+    .btn-close:hover { background: var(--border-2); color: var(--text); }
+
+    .playbook-body { padding: 32px 36px 36px; }
+
+    .pb-title {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .pb-summary {
+      font-size: 14px;
+      color: var(--text-2);
+      line-height: 1.6;
+      max-width: 640px;
+      margin-bottom: 28px;
+    }
+
+    /* KPI Properties strip */
+    .pb-props {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+    .pb-prop {
+      background: var(--surface);
+      padding: 16px 18px;
+    }
+    .pb-prop-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 4px;
+    }
+    .pb-prop-value {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .pb-prop-value.danger { color: var(--red); }
+    .pb-prop-value.success { color: var(--green); }
+
+    /* Action Items */
+    .pb-actions-label {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: -0.005em;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    .actions-stack { display: flex; flex-direction: column; gap: 10px; }
+
+    .action-row {
+      display: grid;
+      grid-template-columns: 36px 1fr auto;
+      gap: 14px;
+      align-items: start;
+      padding: 16px 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      transition: box-shadow 150ms var(--ease), border-color 150ms var(--ease);
+    }
+    .action-row:hover {
+      border-color: rgba(0,113,227,0.25);
+      box-shadow: 0 2px 12px rgba(0,113,227,0.08);
+    }
+    .action-num {
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+      border-radius: 10px;
+      background: var(--surface-2);
       border: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      flex-shrink: 0;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-2);
     }
-    .action-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
-    .action-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
-    .action-trigger-tag {
+    .action-title {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+    .action-desc {
+      font-size: 12px;
+      color: var(--text-2);
+      line-height: 1.5;
+    }
+    .action-trigger {
       display: inline-block;
-      margin-top: 6px;
+      margin-top: 7px;
       font-size: 11px;
       font-family: var(--font-mono);
-      background: var(--bg);
+      background: var(--surface-2);
       border: 1px solid var(--border);
-      padding: 1px 6px;
-      border-radius: 4px;
-      color: var(--text-muted);
+      padding: 2px 7px;
+      border-radius: 5px;
+      color: var(--text-3);
     }
     .action-meta { text-align: right; white-space: nowrap; }
-    .action-owner {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--accent);
-    }
-    .action-timeline {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
+    .action-owner { font-size: 12px; font-weight: 500; color: var(--blue); }
+    .action-days  { font-size: 11px; color: var(--text-3); margin-top: 2px; }
 
     /* ------------------------------------------------------------------ */
-    /* Spinner                                                              */
+    /* Spinner                                                             */
     /* ------------------------------------------------------------------ */
     .spinner {
-      width: 14px; height: 14px;
-      border: 2px solid rgba(255,255,255,0.3);
+      width: 15px; height: 15px;
+      border: 2px solid rgba(255,255,255,0.35);
       border-top-color: #fff;
       border-radius: 50%;
-      animation: spin 0.6s linear infinite;
+      animation: spin 0.55s linear infinite;
       display: none;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ------------------------------------------------------------------ */
-    /* Utilities                                                            */
+    /* Utils                                                               */
     /* ------------------------------------------------------------------ */
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-  <!-- Top Navigation Bar -->
-  <nav class="topbar">
-    <div class="topbar-breadcrumb">
-      <span>Workspace</span>
-      <span class="topbar-sep">/</span>
-      <span>Churn Early Warning System</span>
-    </div>
+  <!-- Navigation -->
+  <nav class="nav">
+    <span class="nav-logo">Churn Early Warning</span>
+    <span class="nav-divider"></span>
+    <span class="nav-sub">Risk Scoring + Playbook Generator</span>
   </nav>
 
-  <div class="page-wrapper">
+  <div class="page">
 
-    <!-- Page Header -->
-    <header class="page-header">
-      <span class="page-icon">📉</span>
-      <h1 class="page-title">Churn Early Warning System</h1>
-      <p class="page-subtitle">Customer Risk Scoring + Playbook Generator — CSV hochladen, Risikoanalyse starten.</p>
+    <!-- Hero -->
+    <header class="hero">
+      <span class="hero-eyebrow">Customer Intelligence</span>
+      <h1 class="hero-title">Wer kündigt als nächstes?</h1>
+      <p class="hero-sub">Laden Sie Ihre Customer-Event-CSV hoch und erhalten Sie in Sekunden ein priorisiertes Risk-Ranking mit konkreten Handlungsempfehlungen.</p>
     </header>
 
-    <!-- Upload Section -->
+    <!-- Upload -->
     <section class="section" id="section-upload">
-      <div class="section-label">Analyse starten</div>
-      <div class="upload-callout">
+      <div class="card">
         <div class="upload-zone" id="upload-zone">
-          <span class="upload-icon">📂</span>
-          <div class="upload-primary">CSV-Datei hier ablegen oder klicken</div>
-          <div class="upload-hint">Unterstützt: customer_events.csv · Max 10 MB</div>
-          <div class="file-name" id="file-name-display"></div>
+          <div class="upload-icon-wrap">📂</div>
+          <h3>CSV-Datei hier ablegen</h3>
+          <p>Oder klicken, um eine Datei auszuwählen · Max. 10 MB</p>
+          <div class="file-name-display" id="file-name-display"></div>
           <input type="file" id="file-input" accept=".csv,text/csv" />
         </div>
-
         <div class="btn-row">
           <button class="btn btn-primary" id="btn-analyze" disabled>
             <span class="spinner" id="spinner"></span>
             <span id="btn-label">Analysieren</span>
           </button>
-          <a href="/api/sample" class="btn btn-secondary" download>
-            ↓ Sample CSV
-          </a>
+          <a href="/api/sample" class="btn btn-secondary" download>↓ Sample CSV</a>
         </div>
-        <div class="error-callout" id="error-alert"></div>
+        <div class="error-box" id="error-alert"></div>
       </div>
     </section>
 
     <!-- KPI Summary -->
     <section class="section hidden" id="section-kpis">
-      <div class="section-label">Executive Summary</div>
-      <div class="kpi-row">
-        <div class="kpi-card critical">
-          <div class="kpi-card-label">Critical Risk</div>
-          <div class="kpi-card-value" id="kpi-critical">—</div>
+      <h2 class="section-title">Übersicht</h2>
+      <div class="kpi-grid">
+        <div class="kpi-tile critical">
+          <div class="kpi-tile-label">Critical</div>
+          <div class="kpi-tile-value" id="kpi-critical">—</div>
         </div>
-        <div class="kpi-card high">
-          <div class="kpi-card-label">High Risk</div>
-          <div class="kpi-card-value" id="kpi-high">—</div>
+        <div class="kpi-tile high">
+          <div class="kpi-tile-label">High Risk</div>
+          <div class="kpi-tile-value" id="kpi-high">—</div>
         </div>
-        <div class="kpi-card arr">
-          <div class="kpi-card-label">ARR at Risk</div>
-          <div class="kpi-card-value" id="kpi-arr">—</div>
+        <div class="kpi-tile arr">
+          <div class="kpi-tile-label">ARR at Risk</div>
+          <div class="kpi-tile-value" id="kpi-arr">—</div>
         </div>
-        <div class="kpi-card total">
-          <div class="kpi-card-label">Accounts</div>
-          <div class="kpi-card-value" id="kpi-total">—</div>
+        <div class="kpi-tile total">
+          <div class="kpi-tile-label">Accounts</div>
+          <div class="kpi-tile-value" id="kpi-total">—</div>
         </div>
       </div>
     </section>
 
-    <!-- Risk Ranking Table -->
+    <!-- Risk Ranking -->
     <section class="section hidden" id="section-ranking">
-      <div class="section-label" id="ranking-title">Top Accounts at Risk</div>
-      <div class="db-table-wrap">
+      <h2 class="section-title" id="ranking-title">Accounts at Risk</h2>
+      <div class="table-card">
         <table>
           <thead>
             <tr>
@@ -608,33 +657,30 @@
           <tbody id="ranking-tbody"></tbody>
         </table>
       </div>
-      <p class="table-hint">Klicken Sie auf einen Account, um das Playbook zu öffnen.</p>
+      <p class="table-hint">Account anklicken, um das Playbook zu öffnen.</p>
     </section>
 
-    <!-- Playbook Panel -->
+    <!-- Playbook -->
     <section class="section hidden" id="section-playbook">
-      <div class="section-label">Playbook</div>
-      <div class="playbook-page" id="playbook-panel">
+      <div class="playbook-card" id="playbook-panel">
 
-        <div class="playbook-top-bar">
-          <span class="playbook-top-bar-title">Account Playbook</span>
+        <div class="playbook-nav">
+          <span class="playbook-nav-label">Playbook</span>
           <button class="btn-close" id="btn-close-playbook" title="Schließen">✕</button>
         </div>
 
-        <div class="playbook-content">
-          <div class="playbook-account" id="pb-account-name">—</div>
-          <div class="playbook-summary" id="pb-summary">—</div>
-
-          <div class="kpi-properties" id="pb-kpi-strip"></div>
-
-          <div class="action-section-label">Empfohlene Maßnahmen</div>
-          <div class="action-list" id="pb-actions"></div>
+        <div class="playbook-body">
+          <div class="pb-title" id="pb-account-name">—</div>
+          <div class="pb-summary" id="pb-summary">—</div>
+          <div class="pb-props" id="pb-kpi-strip"></div>
+          <div class="pb-actions-label">Empfohlene Maßnahmen</div>
+          <div class="actions-stack" id="pb-actions"></div>
         </div>
 
       </div>
     </section>
 
-  </div><!-- end page-wrapper -->
+  </div>
 
   <script>
     // ---------------------------------------------------------------
@@ -642,49 +688,43 @@
     // ---------------------------------------------------------------
     let analysisResult = null;
     let selectedAccountId = null;
-    let selectedFile = null;  // Speichert die Datei unabhängig von drag-drop vs. file-picker
+    let selectedFile = null;
 
     // ---------------------------------------------------------------
     // DOM References
     // ---------------------------------------------------------------
-    const uploadZone    = document.getElementById('upload-zone');
-    const fileInput     = document.getElementById('file-input');
+    const uploadZone      = document.getElementById('upload-zone');
+    const fileInput       = document.getElementById('file-input');
     const fileNameDisplay = document.getElementById('file-name-display');
-    const btnAnalyze    = document.getElementById('btn-analyze');
-    const btnLabel      = document.getElementById('btn-label');
-    const spinner       = document.getElementById('spinner');
-    const errorAlert    = document.getElementById('error-alert');
+    const btnAnalyze      = document.getElementById('btn-analyze');
+    const btnLabel        = document.getElementById('btn-label');
+    const spinner         = document.getElementById('spinner');
+    const errorAlert      = document.getElementById('error-alert');
 
     const sectionKpis     = document.getElementById('section-kpis');
     const sectionRanking  = document.getElementById('section-ranking');
     const sectionPlaybook = document.getElementById('section-playbook');
     const rankingTitle    = document.getElementById('ranking-title');
     const rankingTbody    = document.getElementById('ranking-tbody');
-    const playbookPanel   = document.getElementById('playbook-panel');
     const btnClosePlaybook = document.getElementById('btn-close-playbook');
 
     // ---------------------------------------------------------------
-    // Upload Interaction
+    // Upload
     // ---------------------------------------------------------------
     uploadZone.addEventListener('click', () => fileInput.click());
-
-    uploadZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      uploadZone.classList.add('drag-over');
-    });
+    uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
     uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
     uploadZone.addEventListener('drop', (e) => {
       e.preventDefault();
       uploadZone.classList.remove('drag-over');
-      const file = e.dataTransfer.files[0];
-      if (file) handleFileSelected(file);
+      const f = e.dataTransfer.files[0];
+      if (f) handleFile(f);
     });
-
     fileInput.addEventListener('change', () => {
-      if (fileInput.files[0]) handleFileSelected(fileInput.files[0]);
+      if (fileInput.files[0]) handleFile(fileInput.files[0]);
     });
 
-    function handleFileSelected(file) {
+    function handleFile(file) {
       selectedFile = file;
       fileNameDisplay.textContent = `📄 ${file.name}`;
       fileNameDisplay.style.display = 'block';
@@ -705,23 +745,17 @@
       hideError();
       hideResults();
 
-      const formData = new FormData();
-      formData.append('file', file);
+      const fd = new FormData();
+      fd.append('file', file);
 
       try {
-        const response = await fetch('/api/analyze', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!response.ok) {
-          const err = await response.json().catch(() => ({ detail: response.statusText }));
-          throw new Error(err.detail || `HTTP ${response.status}`);
+        const res = await fetch('/api/analyze', { method: 'POST', body: fd });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ detail: res.statusText }));
+          throw new Error(err.detail || `HTTP ${res.status}`);
         }
-
-        analysisResult = await response.json();
+        analysisResult = await res.json();
         renderResults(analysisResult);
-
       } catch (err) {
         showError(err.message);
       } finally {
@@ -730,24 +764,22 @@
     }
 
     // ---------------------------------------------------------------
-    // Render Results
+    // Render
     // ---------------------------------------------------------------
     function renderResults(data) {
       renderKpis(data.summary, data.ranked_accounts.length);
       renderRanking(data.ranked_accounts);
-
       sectionKpis.classList.remove('hidden');
       sectionRanking.classList.remove('hidden');
-
       sectionKpis.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    function renderKpis(summary, accountCount) {
-      document.getElementById('kpi-critical').textContent = summary.critical_count;
-      document.getElementById('kpi-high').textContent = summary.high_count;
-      document.getElementById('kpi-arr').textContent = formatCurrency(summary.total_arr_at_risk);
-      document.getElementById('kpi-total').textContent = summary.total_analyzed;
-      rankingTitle.textContent = `Top ${accountCount} Accounts at Risk — ${summary.run_date}`;
+    function renderKpis(s, count) {
+      document.getElementById('kpi-critical').textContent = s.critical_count;
+      document.getElementById('kpi-high').textContent = s.high_count;
+      document.getElementById('kpi-arr').textContent = fmtCurrency(s.total_arr_at_risk);
+      document.getElementById('kpi-total').textContent = s.total_analyzed;
+      rankingTitle.textContent = `Top ${count} Accounts at Risk — ${s.run_date}`;
     }
 
     function renderRanking(accounts) {
@@ -755,87 +787,75 @@
       accounts.forEach(acc => {
         const tr = document.createElement('tr');
         tr.dataset.accountId = acc.account_id;
-
-        const renewalHtml = acc.days_to_renewal != null
+        const renewal = acc.days_to_renewal != null
           ? `<span class="renewal-tag">⚠ ${acc.days_to_renewal}d</span>`
-          : `<span style="color:var(--text-muted)">—</span>`;
-
-        const scoreColor = scoreToColor(acc.risk_score);
-
+          : `<span style="color:var(--text-3)">—</span>`;
         tr.innerHTML = `
           <td class="rank">${acc.rank}</td>
-          <td class="account-name">${escHtml(acc.account_name)}</td>
+          <td class="account-name">${esc(acc.account_name)}</td>
           <td><span class="tag tag-segment">${acc.segment}</span></td>
           <td><span class="tag tag-${acc.risk_level}">${acc.risk_level}</span></td>
           <td class="score">
             <div class="score-wrap">
               <span>${acc.risk_score.toFixed(1)}</span>
               <div class="score-bar">
-                <div class="score-bar-fill" style="width:${acc.risk_score}%;background:${scoreColor}"></div>
+                <div class="score-bar-fill" style="width:${acc.risk_score}%;background:${riskColor(acc.risk_score)}"></div>
               </div>
             </div>
           </td>
-          <td class="arr">€${formatNumber(acc.arr_at_risk)}</td>
-          <td>${renewalHtml}</td>
-          <td style="color:var(--text-secondary);font-size:12px;max-width:260px;line-height:1.4">${escHtml(acc.top_reason)}</td>
+          <td class="arr">€${fmtNum(acc.arr_at_risk)}</td>
+          <td>${renewal}</td>
+          <td style="color:var(--text-2);font-size:12px;max-width:240px;line-height:1.4">${esc(acc.top_reason)}</td>
         `;
-
         tr.addEventListener('click', () => openPlaybook(acc.account_id));
         rankingTbody.appendChild(tr);
       });
     }
 
     // ---------------------------------------------------------------
-    // Playbook Panel
+    // Playbook
     // ---------------------------------------------------------------
     function openPlaybook(accountId) {
       if (!analysisResult) return;
+      document.querySelectorAll('#ranking-tbody tr').forEach(tr =>
+        tr.classList.toggle('selected', tr.dataset.accountId === accountId));
 
-      document.querySelectorAll('#ranking-tbody tr').forEach(tr => {
-        tr.classList.toggle('selected', tr.dataset.accountId === accountId);
-      });
-
-      const playbook = analysisResult.playbooks.find(p => p.account_id === accountId);
-      if (!playbook) return;
-
+      const pb = analysisResult.playbooks.find(p => p.account_id === accountId);
+      if (!pb) return;
       selectedAccountId = accountId;
-      renderPlaybook(playbook);
-
+      renderPlaybook(pb);
       sectionPlaybook.classList.remove('hidden');
       sectionPlaybook.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function renderPlaybook(pb) {
       document.getElementById('pb-account-name').innerHTML =
-        `${escHtml(pb.account_name)} <span class="tag tag-${pb.risk_level}">${pb.risk_level}</span>`;
+        `${esc(pb.account_name)} <span class="tag tag-${pb.risk_level}">${pb.risk_level}</span>`;
       document.getElementById('pb-summary').textContent = pb.summary;
 
-      // KPI Properties
       const strip = document.getElementById('pb-kpi-strip');
-      strip.innerHTML = '';
       if (pb.kpi_impact) {
         const k = pb.kpi_impact;
         strip.innerHTML = `
-          <div class="kpi-prop">
-            <div class="kpi-prop-label">ARR at Risk</div>
-            <div class="kpi-prop-value danger">€${formatNumber(k.arr_at_risk)}</div>
+          <div class="pb-prop">
+            <div class="pb-prop-label">ARR at Risk</div>
+            <div class="pb-prop-value danger">€${fmtNum(k.arr_at_risk)}</div>
           </div>
-          <div class="kpi-prop">
-            <div class="kpi-prop-label">Expected Save</div>
-            <div class="kpi-prop-value success">€${formatNumber(k.expected_arr_saved)}</div>
+          <div class="pb-prop">
+            <div class="pb-prop-label">Expected Save</div>
+            <div class="pb-prop-value success">€${fmtNum(k.expected_arr_saved)}</div>
           </div>
-          <div class="kpi-prop">
-            <div class="kpi-prop-label">Retention-Prob.</div>
-            <div class="kpi-prop-value success">${(k.estimated_retention_probability * 100).toFixed(0)}%</div>
+          <div class="pb-prop">
+            <div class="pb-prop-label">Retention</div>
+            <div class="pb-prop-value success">${(k.estimated_retention_probability * 100).toFixed(0)}%</div>
           </div>
-          <div class="kpi-prop">
-            <div class="kpi-prop-label">Churn ohne Eingriff</div>
-            <div class="kpi-prop-value danger">${(k.churn_probability_without_action * 100).toFixed(1)}%</div>
+          <div class="pb-prop">
+            <div class="pb-prop-label">Churn-Risiko</div>
+            <div class="pb-prop-value danger">${(k.churn_probability_without_action * 100).toFixed(1)}%</div>
           </div>
-          ${k.payback_period_days ? `
-          <div class="kpi-prop">
-            <div class="kpi-prop-label">Payback Period</div>
-            <div class="kpi-prop-value">${k.payback_period_days}d</div>
+          ${k.payback_period_days ? `<div class="pb-prop">
+            <div class="pb-prop-label">Payback</div>
+            <div class="pb-prop-value">${k.payback_period_days}d</div>
           </div>` : ''}
         `;
         strip.style.display = '';
@@ -843,25 +863,24 @@
         strip.style.display = 'none';
       }
 
-      // Action Items
-      const actionList = document.getElementById('pb-actions');
-      actionList.innerHTML = '';
+      const list = document.getElementById('pb-actions');
+      list.innerHTML = '';
       pb.action_items.forEach(item => {
         const el = document.createElement('div');
-        el.className = 'action-item';
+        el.className = 'action-row';
         el.innerHTML = `
           <div class="action-num">${item.priority}</div>
           <div>
-            <div class="action-title">${escHtml(item.title)}</div>
-            <div class="action-desc">${escHtml(item.description)}</div>
-            <span class="action-trigger-tag">${escHtml(item.triggered_by)}</span>
+            <div class="action-title">${esc(item.title)}</div>
+            <div class="action-desc">${esc(item.description)}</div>
+            <span class="action-trigger">${esc(item.triggered_by)}</span>
           </div>
           <div class="action-meta">
-            <div class="action-owner">${escHtml(item.recommended_owner)}</div>
-            <div class="action-timeline">${item.suggested_timeline_days} Tage</div>
+            <div class="action-owner">${esc(item.recommended_owner)}</div>
+            <div class="action-days">${item.suggested_timeline_days} Tage</div>
           </div>
         `;
-        actionList.appendChild(el);
+        list.appendChild(el);
       });
     }
 
@@ -874,50 +893,37 @@
     // ---------------------------------------------------------------
     // Helpers
     // ---------------------------------------------------------------
-    function setLoading(loading) {
-      btnAnalyze.disabled = loading;
-      spinner.style.display = loading ? 'block' : 'none';
-      btnLabel.textContent = loading ? 'Analysiere…' : 'Analysieren';
+    function setLoading(on) {
+      btnAnalyze.disabled = on;
+      spinner.style.display = on ? 'block' : 'none';
+      btnLabel.textContent = on ? 'Analysiere…' : 'Analysieren';
     }
-
     function showError(msg) {
       errorAlert.textContent = `Fehler: ${msg}`;
       errorAlert.style.display = 'block';
     }
-
-    function hideError() {
-      errorAlert.style.display = 'none';
-    }
-
+    function hideError() { errorAlert.style.display = 'none'; }
     function hideResults() {
       sectionKpis.classList.add('hidden');
       sectionRanking.classList.add('hidden');
       sectionPlaybook.classList.add('hidden');
     }
-
-    function formatCurrency(value) {
-      if (value >= 1_000_000) return `€${(value / 1_000_000).toFixed(2)}M`;
-      if (value >= 1_000) return `€${Math.round(value / 1_000)}k`;
-      return `€${Math.round(value)}`;
+    function fmtCurrency(v) {
+      if (v >= 1_000_000) return `€${(v / 1_000_000).toFixed(2)}M`;
+      if (v >= 1_000) return `€${Math.round(v / 1_000)}k`;
+      return `€${Math.round(v)}`;
     }
-
-    function formatNumber(value) {
-      return new Intl.NumberFormat('de-DE').format(Math.round(value));
+    function fmtNum(v) {
+      return new Intl.NumberFormat('de-DE').format(Math.round(v));
     }
-
-    function escHtml(str) {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
-
-    function scoreToColor(score) {
-      if (score >= 75) return 'var(--tag-critical-text)';
-      if (score >= 50) return 'var(--tag-high-text)';
-      if (score >= 25) return 'var(--tag-medium-text)';
-      return 'var(--tag-low-text)';
+    function riskColor(score) {
+      if (score >= 75) return 'var(--red)';
+      if (score >= 50) return 'var(--orange)';
+      if (score >= 25) return 'var(--yellow)';
+      return 'var(--green)';
     }
   </script>
 </body>
