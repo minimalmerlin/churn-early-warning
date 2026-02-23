@@ -48,3 +48,4 @@ logs/
 # Data (keine echten Kundendaten ins Repo)
 data/real/
 data/production/
+.vercel

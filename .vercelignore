@@ -1,0 +1,39 @@
+# Virtual Environments – exclusion is critical: venv_churn alone is 150+ MB
+venv/
+venv_*/
+.venv/
+env/
+
+# Test files – not needed in the serverless function
+tests/
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Type-checker and linter caches
+.mypy_cache/
+.ruff_cache/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Development artifacts
+notebooks/
+output/
+logs/
+*.log
+
+# Local tooling and IDE
+.env
+.vscode/
+.idea/
+.DS_Store
+
+# Docs and misc
+*.md
+!README.md
+Code-guidelines*.md
