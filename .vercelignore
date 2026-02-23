@@ -23,7 +23,7 @@ __pycache__/
 
 # Development artifacts
 notebooks/
-output/
+/output/
 logs/
 *.log
 
