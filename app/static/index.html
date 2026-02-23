@@ -461,6 +461,7 @@
     // ---------------------------------------------------------------
     let analysisResult = null;
     let selectedAccountId = null;
+    let selectedFile = null;  // Speichert die Datei unabhängig von drag-drop vs. file-picker
 
     // ---------------------------------------------------------------
     // DOM References
@@ -503,6 +504,7 @@
     });
 
     function handleFileSelected(file) {
+      selectedFile = file;
       fileNameDisplay.textContent = `📄 ${file.name}`;
       fileNameDisplay.style.display = 'block';
       btnAnalyze.disabled = false;
@@ -515,7 +517,7 @@
     btnAnalyze.addEventListener('click', runAnalysis);
 
     async function runAnalysis() {
-      const file = fileInput.files[0];
+      const file = selectedFile;
       if (!file) return;
 
       setLoading(true);
