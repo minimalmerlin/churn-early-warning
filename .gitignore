@@ -41,7 +41,7 @@ htmlcov/
 Thumbs.db
 
 # Output & Logs
-output/
+/output/
 logs/
 *.log
 
