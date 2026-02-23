@@ -4,161 +4,289 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Churn Early Warning System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     /* ------------------------------------------------------------------ */
-    /* Design System: Minimales, klares Enterprise-UI                       */
+    /* Design System: Notion-inspiriertes Light Theme                       */
     /* ------------------------------------------------------------------ */
     :root {
-      --color-bg: #0f1117;
-      --color-surface: #1a1d27;
-      --color-surface-2: #22263a;
-      --color-border: #2e3250;
-      --color-text: #e8eaf6;
-      --color-text-muted: #7b82a8;
-      --color-accent: #5c6bc0;
-      --color-accent-hover: #7986cb;
-      --color-critical: #ef5350;
-      --color-high: #ffa726;
-      --color-medium: #ffee58;
-      --color-low: #66bb6a;
-      --color-success: #26a69a;
-      --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
-      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      --radius: 8px;
-      --transition: 150ms ease;
+      --bg:              #F7F7F5;
+      --page:            #FFFFFF;
+      --border:          #E9E9E8;
+      --border-hover:    #CFCFCA;
+      --text:            #37352F;
+      --text-secondary:  #6B6B6B;
+      --text-muted:      #9B9A97;
+      --accent:          #2383E2;
+      --accent-hover:    #1A72C7;
+      --accent-light:    #EDF3FB;
+
+      /* Notion Tag-Farbpalette */
+      --tag-critical-bg:   #FFE2DD;
+      --tag-critical-text: #C0392B;
+      --tag-high-bg:       #FDECC8;
+      --tag-high-text:     #D9730D;
+      --tag-medium-bg:     #FBF3DB;
+      --tag-medium-text:   #B8860B;
+      --tag-low-bg:        #DBEDDB;
+      --tag-low-text:      #3D8B60;
+      --tag-segment-bg:    #E8E8E5;
+      --tag-segment-text:  #6B6B6B;
+
+      --font:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'SFMono-Regular', 'Consolas', 'Liberation Mono', monospace;
+      --radius:  6px;
+      --shadow:  0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: var(--color-bg);
-      color: var(--color-text);
-      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
       font-size: 14px;
       line-height: 1.6;
       min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* --- Header --- */
-    header {
-      background: var(--color-surface);
-      border-bottom: 1px solid var(--color-border);
-      padding: 16px 32px;
+    /* ------------------------------------------------------------------ */
+    /* Top Navigation                                                       */
+    /* ------------------------------------------------------------------ */
+    .topbar {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 48px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    header .logo { font-size: 20px; font-weight: 700; color: var(--color-accent-hover); }
-    header .subtitle { color: var(--color-text-muted); font-size: 13px; }
+    .topbar-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    .topbar-breadcrumb span { color: var(--text-secondary); font-weight: 500; }
+    .topbar-sep { color: var(--border-hover); }
 
-    /* --- Layout --- */
-    main { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
-    section { margin-bottom: 40px; }
+    /* ------------------------------------------------------------------ */
+    /* Page Layout                                                          */
+    /* ------------------------------------------------------------------ */
+    .page-wrapper {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
 
-    h2 {
-      font-size: 16px;
+    /* ------------------------------------------------------------------ */
+    /* Page Header (Notion-Style)                                           */
+    /* ------------------------------------------------------------------ */
+    .page-header {
+      padding: 48px 0 32px;
+    }
+    .page-icon { font-size: 48px; margin-bottom: 12px; display: block; }
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+    .page-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Section Divider                                                      */
+    /* ------------------------------------------------------------------ */
+    .section { margin-bottom: 36px; }
+
+    .section-label {
+      font-size: 11px;
       font-weight: 600;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.07em;
       text-transform: uppercase;
-      color: var(--color-text-muted);
-      margin-bottom: 16px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--color-border);
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
     }
 
-    /* --- Upload Zone --- */
-    .upload-zone {
-      border: 2px dashed var(--color-border);
+    /* ------------------------------------------------------------------ */
+    /* Callout / Upload Zone                                                */
+    /* ------------------------------------------------------------------ */
+    .upload-callout {
+      background: var(--page);
+      border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 48px 32px;
+      padding: 32px;
+      box-shadow: var(--shadow);
+    }
+
+    .upload-zone {
+      border: 1.5px dashed var(--border-hover);
+      border-radius: var(--radius);
+      padding: 36px 24px;
       text-align: center;
       cursor: pointer;
-      transition: border-color var(--transition), background var(--transition);
-      background: var(--color-surface);
+      transition: border-color 120ms ease, background 120ms ease;
+      background: var(--bg);
     }
     .upload-zone:hover, .upload-zone.drag-over {
-      border-color: var(--color-accent);
-      background: var(--color-surface-2);
+      border-color: var(--accent);
+      background: var(--accent-light);
     }
-    .upload-zone .upload-icon { font-size: 40px; margin-bottom: 12px; display: block; }
-    .upload-zone p { color: var(--color-text-muted); font-size: 13px; margin-top: 8px; }
+    .upload-zone .upload-icon { font-size: 32px; margin-bottom: 10px; display: block; }
+    .upload-zone .upload-primary {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .upload-zone .upload-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
     .upload-zone .file-name {
       display: none;
-      margin-top: 12px;
-      color: var(--color-success);
-      font-weight: 600;
-      font-family: var(--font-mono);
+      margin-top: 10px;
       font-size: 13px;
+      font-weight: 500;
+      color: var(--accent);
+      font-family: var(--font-mono);
     }
     #file-input { display: none; }
 
-    /* --- Buttons --- */
+    /* ------------------------------------------------------------------ */
+    /* Buttons                                                              */
+    /* ------------------------------------------------------------------ */
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 16px;
+    }
+
     .btn {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 10px 20px;
+      gap: 6px;
+      padding: 7px 14px;
       border-radius: var(--radius);
-      border: none;
+      border: 1px solid transparent;
       cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-      transition: background var(--transition), opacity var(--transition);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 500;
+      transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+      text-decoration: none;
     }
     .btn-primary {
-      background: var(--color-accent);
-      color: #fff;
+      background: var(--text);
+      color: #FFF;
+      border-color: var(--text);
     }
-    .btn-primary:hover { background: var(--color-accent-hover); }
-    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-primary:hover:not(:disabled) {
+      background: #1a1a16;
+    }
+    .btn-primary:disabled {
+      background: var(--border-hover);
+      border-color: var(--border-hover);
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
     .btn-secondary {
-      background: var(--color-surface-2);
-      color: var(--color-text-muted);
-      border: 1px solid var(--color-border);
+      background: var(--page);
+      color: var(--text-secondary);
+      border-color: var(--border);
     }
-    .btn-secondary:hover { color: var(--color-text); border-color: var(--color-accent); }
-
-    .actions-row {
-      display: flex;
-      gap: 12px;
-      margin-top: 20px;
-      align-items: center;
+    .btn-secondary:hover {
+      background: var(--bg);
+      border-color: var(--border-hover);
+      color: var(--text);
     }
 
-    /* --- KPI Cards --- */
-    .kpi-grid {
+    /* ------------------------------------------------------------------ */
+    /* Error Alert                                                          */
+    /* ------------------------------------------------------------------ */
+    .error-callout {
+      display: none;
+      margin-top: 12px;
+      padding: 12px 16px;
+      background: #FFF5F5;
+      border: 1px solid #FECACA;
+      border-radius: var(--radius);
+      color: #C0392B;
+      font-size: 13px;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* KPI Cards                                                            */
+    /* ------------------------------------------------------------------ */
+    .kpi-row {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
     }
-    .kpi-card {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius);
-      padding: 20px 24px;
+    @media (max-width: 640px) {
+      .kpi-row { grid-template-columns: repeat(2, 1fr); }
     }
-    .kpi-card .kpi-label {
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--color-text-muted);
-      margin-bottom: 8px;
-    }
-    .kpi-card .kpi-value {
-      font-size: 28px;
-      font-weight: 700;
-      font-family: var(--font-mono);
-    }
-    .kpi-card.critical .kpi-value { color: var(--color-critical); }
-    .kpi-card.high .kpi-value { color: var(--color-high); }
-    .kpi-card.arr .kpi-value { color: var(--color-accent-hover); }
-    .kpi-card.total .kpi-value { color: var(--color-text); }
 
-    /* --- Risk Table --- */
-    .table-wrapper {
-      overflow-x: auto;
+    .kpi-card {
+      background: var(--page);
+      border: 1px solid var(--border);
       border-radius: var(--radius);
-      border: 1px solid var(--color-border);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+    }
+    .kpi-card-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .kpi-card-value {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      font-family: var(--font);
+    }
+    .kpi-card.critical .kpi-card-value { color: var(--tag-critical-text); }
+    .kpi-card.high     .kpi-card-value { color: var(--tag-high-text); }
+    .kpi-card.arr      .kpi-card-value { color: var(--accent); }
+    .kpi-card.total    .kpi-card-value { color: var(--text); }
+
+    /* ------------------------------------------------------------------ */
+    /* Notion-Style Table                                                   */
+    /* ------------------------------------------------------------------ */
+    .db-table-wrap {
+      background: var(--page);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
     }
     table {
       width: 100%;
@@ -166,294 +294,347 @@
       font-size: 13px;
     }
     thead th {
-      background: var(--color-surface-2);
-      padding: 12px 16px;
+      padding: 9px 12px;
       text-align: left;
       font-size: 11px;
-      letter-spacing: 0.08em;
+      font-weight: 600;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: var(--color-text-muted);
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
       white-space: nowrap;
     }
     tbody tr {
-      border-top: 1px solid var(--color-border);
-      transition: background var(--transition);
+      border-bottom: 1px solid var(--border);
+      transition: background 80ms ease;
       cursor: pointer;
     }
-    tbody tr:hover { background: var(--color-surface-2); }
-    tbody tr.selected { background: rgba(92, 107, 192, 0.15); }
-    tbody td { padding: 12px 16px; vertical-align: middle; }
-    tbody td.rank { color: var(--color-text-muted); font-family: var(--font-mono); }
-    tbody td.account-name { font-weight: 600; }
-    tbody td.score { font-family: var(--font-mono); font-weight: 700; }
-    tbody td.arr { font-family: var(--font-mono); text-align: right; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #FAFAF9; }
+    tbody tr.selected { background: var(--accent-light); }
+    tbody td { padding: 10px 12px; vertical-align: middle; }
+    tbody td.rank {
+      color: var(--text-muted);
+      font-size: 12px;
+      font-family: var(--font-mono);
+      width: 36px;
+    }
+    tbody td.account-name { font-weight: 500; color: var(--text); }
+    tbody td.score { font-family: var(--font-mono); font-size: 13px; font-weight: 500; }
+    tbody td.arr { font-family: var(--font-mono); text-align: right; color: var(--text-secondary); }
+    .table-hint {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
 
-    /* --- Risk Badges --- */
-    .badge {
-      display: inline-block;
-      padding: 3px 8px;
+    /* ------------------------------------------------------------------ */
+    /* Tags / Badges (Notion Palette)                                       */
+    /* ------------------------------------------------------------------ */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
       border-radius: 4px;
       font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.05em;
+      font-weight: 500;
+      white-space: nowrap;
     }
-    .badge-CRITICAL { background: rgba(239,83,80,.2); color: var(--color-critical); }
-    .badge-HIGH     { background: rgba(255,167,38,.2); color: var(--color-high); }
-    .badge-MEDIUM   { background: rgba(255,238,88,.2); color: #e6d800; }
-    .badge-LOW      { background: rgba(102,187,106,.2); color: var(--color-low); }
+    .tag-CRITICAL { background: var(--tag-critical-bg); color: var(--tag-critical-text); }
+    .tag-HIGH     { background: var(--tag-high-bg);     color: var(--tag-high-text); }
+    .tag-MEDIUM   { background: var(--tag-medium-bg);   color: var(--tag-medium-text); }
+    .tag-LOW      { background: var(--tag-low-bg);      color: var(--tag-low-text); }
+    .tag-segment  { background: var(--tag-segment-bg);  color: var(--tag-segment-text); font-family: var(--font-mono); font-size: 11px; }
 
-    .segment-badge {
-      font-size: 11px;
-      color: var(--color-text-muted);
-      font-family: var(--font-mono);
-    }
-
-    /* --- Score Bar --- */
-    .score-bar-wrap { display: flex; align-items: center; gap: 10px; }
+    /* ------------------------------------------------------------------ */
+    /* Score Bar                                                            */
+    /* ------------------------------------------------------------------ */
+    .score-wrap { display: flex; align-items: center; gap: 8px; }
     .score-bar {
       flex: 1;
-      height: 6px;
-      background: var(--color-border);
+      height: 5px;
+      background: var(--border);
       border-radius: 3px;
       overflow: hidden;
-      max-width: 80px;
+      max-width: 64px;
     }
-    .score-bar-fill {
-      height: 100%;
-      border-radius: 3px;
-      transition: width 0.5s ease;
+    .score-bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+    .renewal-tag { font-size: 11px; color: var(--tag-high-text); font-family: var(--font-mono); }
+
+    /* ------------------------------------------------------------------ */
+    /* Playbook Panel                                                       */
+    /* ------------------------------------------------------------------ */
+    .playbook-page {
+      background: var(--page);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
     }
 
-    /* --- Playbook Panel --- */
-    #playbook-panel {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius);
-      padding: 24px;
-      display: none;
-    }
-    #playbook-panel.visible { display: block; }
-    .playbook-header {
+    .playbook-top-bar {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 20px;
+      align-items: center;
     }
-    .playbook-account-name { font-size: 18px; font-weight: 700; }
-    .playbook-summary {
-      font-size: 13px;
-      color: var(--color-text-muted);
-      margin-top: 4px;
-      max-width: 700px;
-      line-height: 1.5;
+    .playbook-top-bar-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
     }
-    .close-btn {
+    .btn-close {
       background: none;
       border: none;
-      color: var(--color-text-muted);
       cursor: pointer;
-      font-size: 20px;
-      padding: 4px 8px;
-      border-radius: var(--radius);
-      transition: color var(--transition);
+      color: var(--text-muted);
+      font-size: 18px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: background 100ms ease, color 100ms ease;
+      line-height: 1;
     }
-    .close-btn:hover { color: var(--color-text); }
+    .btn-close:hover { background: var(--border); color: var(--text); }
 
-    /* KPI Impact Strip */
-    .kpi-strip {
+    .playbook-content { padding: 28px 32px; }
+    .playbook-account { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .playbook-summary { font-size: 13px; color: var(--text-secondary); line-height: 1.6; max-width: 680px; margin-bottom: 24px; }
+
+    /* KPI Properties (Notion-style property row) */
+    .kpi-properties {
       display: flex;
-      gap: 24px;
-      background: var(--color-surface-2);
-      border-radius: var(--radius);
-      padding: 16px 20px;
-      margin-bottom: 20px;
       flex-wrap: wrap;
-    }
-    .kpi-strip-item { display: flex; flex-direction: column; gap: 2px; }
-    .kpi-strip-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-muted); }
-    .kpi-strip-value { font-size: 18px; font-weight: 700; font-family: var(--font-mono); }
-    .kpi-strip-value.danger { color: var(--color-critical); }
-    .kpi-strip-value.success { color: var(--color-success); }
-
-    /* Action Cards */
-    .action-list { display: flex; flex-direction: column; gap: 10px; }
-    .action-card {
-      border: 1px solid var(--color-border);
+      gap: 0;
+      border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 14px 16px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .kpi-prop {
+      flex: 1;
+      min-width: 140px;
+      padding: 14px 18px;
+      border-right: 1px solid var(--border);
+    }
+    .kpi-prop:last-child { border-right: none; }
+    .kpi-prop-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .kpi-prop-value {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .kpi-prop-value.danger { color: var(--tag-critical-text); }
+    .kpi-prop-value.success { color: var(--tag-low-text); }
+
+    /* Action Items */
+    .action-section-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .action-list { display: flex; flex-direction: column; gap: 8px; }
+    .action-item {
       display: grid;
-      grid-template-columns: 36px 1fr auto;
+      grid-template-columns: 28px 1fr auto;
       gap: 12px;
       align-items: start;
-      transition: border-color var(--transition);
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      transition: border-color 100ms ease, box-shadow 100ms ease;
     }
-    .action-card:hover { border-color: var(--color-accent); }
-    .action-priority {
-      width: 36px; height: 36px;
+    .action-item:hover {
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow);
+    }
+    .action-num {
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
-      background: var(--color-surface-2);
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700;
-      font-family: var(--font-mono);
-      font-size: 13px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
       flex-shrink: 0;
     }
-    .action-title { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
-    .action-desc { font-size: 12px; color: var(--color-text-muted); line-height: 1.5; }
-    .action-meta { text-align: right; white-space: nowrap; }
-    .action-owner {
-      font-size: 11px;
-      color: var(--color-accent-hover);
-      font-weight: 600;
-    }
-    .action-timeline {
-      font-size: 11px;
-      color: var(--color-text-muted);
-      margin-top: 2px;
-    }
-    .action-trigger {
+    .action-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+    .action-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+    .action-trigger-tag {
+      display: inline-block;
       margin-top: 6px;
       font-size: 11px;
       font-family: var(--font-mono);
-      color: var(--color-text-muted);
-      background: var(--color-surface-2);
-      padding: 2px 6px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
       border-radius: 4px;
-      display: inline-block;
+      color: var(--text-muted);
+    }
+    .action-meta { text-align: right; white-space: nowrap; }
+    .action-owner {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent);
+    }
+    .action-timeline {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
     }
 
-    /* --- Loading & Error States --- */
+    /* ------------------------------------------------------------------ */
+    /* Spinner                                                              */
+    /* ------------------------------------------------------------------ */
     .spinner {
-      width: 18px; height: 18px;
-      border: 2px solid var(--color-border);
-      border-top-color: var(--color-accent-hover);
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
       border-radius: 50%;
       animation: spin 0.6s linear infinite;
       display: none;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .alert {
-      padding: 14px 18px;
-      border-radius: var(--radius);
-      font-size: 13px;
-      margin-top: 16px;
-      display: none;
-    }
-    .alert-error {
-      background: rgba(239,83,80,.1);
-      border: 1px solid rgba(239,83,80,.3);
-      color: #ef9a9a;
-    }
-
-    /* --- Tooltip for days to renewal --- */
-    .renewal-warning { color: var(--color-high); font-size: 11px; font-family: var(--font-mono); }
-
-    /* --- Hidden state --- */
+    /* ------------------------------------------------------------------ */
+    /* Utilities                                                            */
+    /* ------------------------------------------------------------------ */
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-  <header>
-    <div>
-      <div class="logo">Churn Early Warning System</div>
-      <div class="subtitle">Customer Risk Scoring + Playbook Generator</div>
+  <!-- Top Navigation Bar -->
+  <nav class="topbar">
+    <div class="topbar-breadcrumb">
+      <span>Workspace</span>
+      <span class="topbar-sep">/</span>
+      <span>Churn Early Warning System</span>
     </div>
-  </header>
+  </nav>
 
-  <main>
+  <div class="page-wrapper">
+
+    <!-- Page Header -->
+    <header class="page-header">
+      <span class="page-icon">📉</span>
+      <h1 class="page-title">Churn Early Warning System</h1>
+      <p class="page-subtitle">Customer Risk Scoring + Playbook Generator — CSV hochladen, Risikoanalyse starten.</p>
+    </header>
 
     <!-- Upload Section -->
-    <section id="section-upload">
-      <h2>Analyse starten</h2>
-      <div class="upload-zone" id="upload-zone">
-        <span class="upload-icon">📂</span>
-        <strong>CSV-Datei hier ablegen</strong>
-        <p>oder klicken zum Auswählen</p>
-        <div class="file-name" id="file-name-display"></div>
-        <input type="file" id="file-input" accept=".csv,text/csv" />
-      </div>
+    <section class="section" id="section-upload">
+      <div class="section-label">Analyse starten</div>
+      <div class="upload-callout">
+        <div class="upload-zone" id="upload-zone">
+          <span class="upload-icon">📂</span>
+          <div class="upload-primary">CSV-Datei hier ablegen oder klicken</div>
+          <div class="upload-hint">Unterstützt: customer_events.csv · Max 10 MB</div>
+          <div class="file-name" id="file-name-display"></div>
+          <input type="file" id="file-input" accept=".csv,text/csv" />
+        </div>
 
-      <div class="actions-row">
-        <button class="btn btn-primary" id="btn-analyze" disabled>
-          <span class="spinner" id="spinner"></span>
-          <span id="btn-label">Analysieren</span>
-        </button>
-        <a href="/api/sample" class="btn btn-secondary" download>
-          ⬇ Sample CSV herunterladen
-        </a>
-        <div class="alert alert-error" id="error-alert"></div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="btn-analyze" disabled>
+            <span class="spinner" id="spinner"></span>
+            <span id="btn-label">Analysieren</span>
+          </button>
+          <a href="/api/sample" class="btn btn-secondary" download>
+            ↓ Sample CSV
+          </a>
+        </div>
+        <div class="error-callout" id="error-alert"></div>
       </div>
     </section>
 
     <!-- KPI Summary -->
-    <section id="section-kpis" class="hidden">
-      <h2>Executive Summary</h2>
-      <div class="kpi-grid">
+    <section class="section hidden" id="section-kpis">
+      <div class="section-label">Executive Summary</div>
+      <div class="kpi-row">
         <div class="kpi-card critical">
-          <div class="kpi-label">Critical Risk</div>
-          <div class="kpi-value" id="kpi-critical">—</div>
+          <div class="kpi-card-label">Critical Risk</div>
+          <div class="kpi-card-value" id="kpi-critical">—</div>
         </div>
         <div class="kpi-card high">
-          <div class="kpi-label">High Risk</div>
-          <div class="kpi-value" id="kpi-high">—</div>
+          <div class="kpi-card-label">High Risk</div>
+          <div class="kpi-card-value" id="kpi-high">—</div>
         </div>
         <div class="kpi-card arr">
-          <div class="kpi-label">Gesamt ARR at Risk</div>
-          <div class="kpi-value" id="kpi-arr">—</div>
+          <div class="kpi-card-label">ARR at Risk</div>
+          <div class="kpi-card-value" id="kpi-arr">—</div>
         </div>
         <div class="kpi-card total">
-          <div class="kpi-label">Analysierte Accounts</div>
-          <div class="kpi-value" id="kpi-total">—</div>
+          <div class="kpi-card-label">Accounts</div>
+          <div class="kpi-card-value" id="kpi-total">—</div>
         </div>
       </div>
     </section>
 
     <!-- Risk Ranking Table -->
-    <section id="section-ranking" class="hidden">
-      <h2 id="ranking-title">Top Accounts at Risk</h2>
-      <div class="table-wrapper">
+    <section class="section hidden" id="section-ranking">
+      <div class="section-label" id="ranking-title">Top Accounts at Risk</div>
+      <div class="db-table-wrap">
         <table>
           <thead>
             <tr>
               <th>#</th>
               <th>Account</th>
               <th>Segment</th>
-              <th>Risk Level</th>
+              <th>Risk</th>
               <th>Score</th>
               <th>ARR at Risk</th>
               <th>Renewal</th>
-              <th>Hauptsignal</th>
+              <th>Top Signal</th>
             </tr>
           </thead>
           <tbody id="ranking-tbody"></tbody>
         </table>
       </div>
-      <p style="margin-top:10px; font-size:12px; color:var(--color-text-muted);">
-        Klicken Sie auf einen Account, um das Playbook zu öffnen.
-      </p>
+      <p class="table-hint">Klicken Sie auf einen Account, um das Playbook zu öffnen.</p>
     </section>
 
     <!-- Playbook Panel -->
-    <section id="section-playbook" class="hidden">
-      <h2>Playbook</h2>
-      <div id="playbook-panel">
-        <div class="playbook-header">
-          <div>
-            <div class="playbook-account-name" id="pb-account-name">—</div>
-            <div class="playbook-summary" id="pb-summary">—</div>
-          </div>
-          <button class="close-btn" id="btn-close-playbook" title="Schließen">✕</button>
+    <section class="section hidden" id="section-playbook">
+      <div class="section-label">Playbook</div>
+      <div class="playbook-page" id="playbook-panel">
+
+        <div class="playbook-top-bar">
+          <span class="playbook-top-bar-title">Account Playbook</span>
+          <button class="btn-close" id="btn-close-playbook" title="Schließen">✕</button>
         </div>
 
-        <div class="kpi-strip" id="pb-kpi-strip"></div>
+        <div class="playbook-content">
+          <div class="playbook-account" id="pb-account-name">—</div>
+          <div class="playbook-summary" id="pb-summary">—</div>
 
-        <div class="action-list" id="pb-actions"></div>
+          <div class="kpi-properties" id="pb-kpi-strip"></div>
+
+          <div class="action-section-label">Empfohlene Maßnahmen</div>
+          <div class="action-list" id="pb-actions"></div>
+        </div>
+
       </div>
     </section>
 
-  </main>
+  </div><!-- end page-wrapper -->
 
   <script>
     // ---------------------------------------------------------------
@@ -566,7 +747,7 @@
       document.getElementById('kpi-high').textContent = summary.high_count;
       document.getElementById('kpi-arr').textContent = formatCurrency(summary.total_arr_at_risk);
       document.getElementById('kpi-total').textContent = summary.total_analyzed;
-      rankingTitle.textContent = `Top ${accountCount} Accounts at Risk (${summary.run_date})`;
+      rankingTitle.textContent = `Top ${accountCount} Accounts at Risk — ${summary.run_date}`;
     }
 
     function renderRanking(accounts) {
@@ -576,18 +757,18 @@
         tr.dataset.accountId = acc.account_id;
 
         const renewalHtml = acc.days_to_renewal != null
-          ? `<span class="renewal-warning">⚠ ${acc.days_to_renewal}d</span>`
-          : '<span style="color:var(--color-text-muted)">—</span>';
+          ? `<span class="renewal-tag">⚠ ${acc.days_to_renewal}d</span>`
+          : `<span style="color:var(--text-muted)">—</span>`;
 
         const scoreColor = scoreToColor(acc.risk_score);
 
         tr.innerHTML = `
           <td class="rank">${acc.rank}</td>
           <td class="account-name">${escHtml(acc.account_name)}</td>
-          <td><span class="segment-badge">${acc.segment}</span></td>
-          <td><span class="badge badge-${acc.risk_level}">${acc.risk_level}</span></td>
+          <td><span class="tag tag-segment">${acc.segment}</span></td>
+          <td><span class="tag tag-${acc.risk_level}">${acc.risk_level}</span></td>
           <td class="score">
-            <div class="score-bar-wrap">
+            <div class="score-wrap">
               <span>${acc.risk_score.toFixed(1)}</span>
               <div class="score-bar">
                 <div class="score-bar-fill" style="width:${acc.risk_score}%;background:${scoreColor}"></div>
@@ -596,7 +777,7 @@
           </td>
           <td class="arr">€${formatNumber(acc.arr_at_risk)}</td>
           <td>${renewalHtml}</td>
-          <td style="color:var(--color-text-muted);font-size:12px;max-width:280px">${escHtml(acc.top_reason)}</td>
+          <td style="color:var(--text-secondary);font-size:12px;max-width:260px;line-height:1.4">${escHtml(acc.top_reason)}</td>
         `;
 
         tr.addEventListener('click', () => openPlaybook(acc.account_id));
@@ -610,7 +791,6 @@
     function openPlaybook(accountId) {
       if (!analysisResult) return;
 
-      // Highlight selected row
       document.querySelectorAll('#ranking-tbody tr').forEach(tr => {
         tr.classList.toggle('selected', tr.dataset.accountId === accountId);
       });
@@ -622,70 +802,71 @@
       renderPlaybook(playbook);
 
       sectionPlaybook.classList.remove('hidden');
-      playbookPanel.classList.add('visible');
-      playbookPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      sectionPlaybook.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function renderPlaybook(pb) {
       document.getElementById('pb-account-name').innerHTML =
-        `${escHtml(pb.account_name)} <span class="badge badge-${pb.risk_level}">${pb.risk_level}</span>`;
+        `${escHtml(pb.account_name)} <span class="tag tag-${pb.risk_level}">${pb.risk_level}</span>`;
       document.getElementById('pb-summary').textContent = pb.summary;
 
-      // KPI Strip
+      // KPI Properties
       const strip = document.getElementById('pb-kpi-strip');
       strip.innerHTML = '';
       if (pb.kpi_impact) {
         const k = pb.kpi_impact;
         strip.innerHTML = `
-          <div class="kpi-strip-item">
-            <span class="kpi-strip-label">ARR at Risk</span>
-            <span class="kpi-strip-value danger">€${formatNumber(k.arr_at_risk)}</span>
+          <div class="kpi-prop">
+            <div class="kpi-prop-label">ARR at Risk</div>
+            <div class="kpi-prop-value danger">€${formatNumber(k.arr_at_risk)}</div>
           </div>
-          <div class="kpi-strip-item">
-            <span class="kpi-strip-label">Expected Save bei Intervention</span>
-            <span class="kpi-strip-value success">€${formatNumber(k.expected_arr_saved)}</span>
+          <div class="kpi-prop">
+            <div class="kpi-prop-label">Expected Save</div>
+            <div class="kpi-prop-value success">€${formatNumber(k.expected_arr_saved)}</div>
           </div>
-          <div class="kpi-strip-item">
-            <span class="kpi-strip-label">Retention-Wahrscheinlichkeit</span>
-            <span class="kpi-strip-value success">${(k.estimated_retention_probability * 100).toFixed(0)}%</span>
+          <div class="kpi-prop">
+            <div class="kpi-prop-label">Retention-Prob.</div>
+            <div class="kpi-prop-value success">${(k.estimated_retention_probability * 100).toFixed(0)}%</div>
           </div>
-          <div class="kpi-strip-item">
-            <span class="kpi-strip-label">Churn-Prob. ohne Eingriff</span>
-            <span class="kpi-strip-value danger">${(k.churn_probability_without_action * 100).toFixed(1)}%</span>
+          <div class="kpi-prop">
+            <div class="kpi-prop-label">Churn ohne Eingriff</div>
+            <div class="kpi-prop-value danger">${(k.churn_probability_without_action * 100).toFixed(1)}%</div>
           </div>
           ${k.payback_period_days ? `
-          <div class="kpi-strip-item">
-            <span class="kpi-strip-label">Payback Period</span>
-            <span class="kpi-strip-value">${k.payback_period_days}d</span>
+          <div class="kpi-prop">
+            <div class="kpi-prop-label">Payback Period</div>
+            <div class="kpi-prop-value">${k.payback_period_days}d</div>
           </div>` : ''}
         `;
+        strip.style.display = '';
+      } else {
+        strip.style.display = 'none';
       }
 
       // Action Items
       const actionList = document.getElementById('pb-actions');
       actionList.innerHTML = '';
       pb.action_items.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'action-card';
-        card.innerHTML = `
-          <div class="action-priority">${item.priority}</div>
+        const el = document.createElement('div');
+        el.className = 'action-item';
+        el.innerHTML = `
+          <div class="action-num">${item.priority}</div>
           <div>
             <div class="action-title">${escHtml(item.title)}</div>
             <div class="action-desc">${escHtml(item.description)}</div>
-            <span class="action-trigger">${escHtml(item.triggered_by)}</span>
+            <span class="action-trigger-tag">${escHtml(item.triggered_by)}</span>
           </div>
           <div class="action-meta">
             <div class="action-owner">${escHtml(item.recommended_owner)}</div>
-            <div class="action-timeline">⏱ ${item.suggested_timeline_days} Tage</div>
+            <div class="action-timeline">${item.suggested_timeline_days} Tage</div>
           </div>
         `;
-        actionList.appendChild(card);
+        actionList.appendChild(el);
       });
     }
 
     btnClosePlaybook.addEventListener('click', () => {
       sectionPlaybook.classList.add('hidden');
-      playbookPanel.classList.remove('visible');
       document.querySelectorAll('#ranking-tbody tr').forEach(tr => tr.classList.remove('selected'));
       selectedAccountId = null;
     });
@@ -696,7 +877,7 @@
     function setLoading(loading) {
       btnAnalyze.disabled = loading;
       spinner.style.display = loading ? 'block' : 'none';
-      btnLabel.textContent = loading ? 'Analysiere...' : 'Analysieren';
+      btnLabel.textContent = loading ? 'Analysiere…' : 'Analysieren';
     }
 
     function showError(msg) {
@@ -733,10 +914,10 @@
     }
 
     function scoreToColor(score) {
-      if (score >= 75) return 'var(--color-critical)';
-      if (score >= 50) return 'var(--color-high)';
-      if (score >= 25) return 'var(--color-medium)';
-      return 'var(--color-low)';
+      if (score >= 75) return 'var(--tag-critical-text)';
+      if (score >= 50) return 'var(--tag-high-text)';
+      if (score >= 25) return 'var(--tag-medium-text)';
+      return 'var(--tag-low-text)';
     }
   </script>
 </body>
