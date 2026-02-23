@@ -93,7 +93,7 @@ git clone <repo-url>
 cd churn-early-warning
 
 # Virtual Environment erstellen
-python -m venv venv
+python3.12 -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 
 # Dependencies installieren
@@ -103,16 +103,19 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-### 2. Pipeline starten
+### 2. Web-App starten (empfohlen)
+
+```bash
+python run_server.py
+# → http://localhost:8000
+# → API-Docs: http://localhost:8000/docs
+```
+
+### 3. CLI-Pipeline (ohne Web-Interface)
 
 ```bash
 python main.py
-```
-
-### 3. Konfiguration via Environment Variables
-
-```bash
-# Beispiel: Eigene Datei, Top 10 Accounts
+# Konfiguration via Env-Vars:
 CHURN_DATA_SOURCE=data/my_events.csv CHURN_TOP_N_ACCOUNTS=10 python main.py
 ```
 
@@ -126,8 +129,20 @@ pytest tests/ -v --cov=src
 
 ```bash
 docker build -t churn-pipeline .
-docker run -e CHURN_TOP_N_ACCOUNTS=10 churn-pipeline
+docker run -p 8000:8000 -e CHURN_TOP_N_ACCOUNTS=10 churn-pipeline
 ```
+
+---
+
+## API-Endpunkte
+
+| Methode | Endpunkt | Beschreibung |
+|---|---|---|
+| `GET` | `/` | Web-Interface (Single-Page App) |
+| `POST` | `/api/analyze` | CSV hochladen → Risk Report als JSON |
+| `GET` | `/api/sample` | Sample-CSV herunterladen |
+| `GET` | `/api/health` | Health Check |
+| `GET` | `/docs` | Automatische OpenAPI-Dokumentation |
 
 ---
 

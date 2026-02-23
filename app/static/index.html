@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Churn Early Warning System</title>
+  <style>
+    /* ------------------------------------------------------------------ */
+    /* Design System: Minimales, klares Enterprise-UI                       */
+    /* ------------------------------------------------------------------ */
+    :root {
+      --color-bg: #0f1117;
+      --color-surface: #1a1d27;
+      --color-surface-2: #22263a;
+      --color-border: #2e3250;
+      --color-text: #e8eaf6;
+      --color-text-muted: #7b82a8;
+      --color-accent: #5c6bc0;
+      --color-accent-hover: #7986cb;
+      --color-critical: #ef5350;
+      --color-high: #ffa726;
+      --color-medium: #ffee58;
+      --color-low: #66bb6a;
+      --color-success: #26a69a;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      --radius: 8px;
+      --transition: 150ms ease;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* --- Header --- */
+    header {
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    header .logo { font-size: 20px; font-weight: 700; color: var(--color-accent-hover); }
+    header .subtitle { color: var(--color-text-muted); font-size: 13px; }
+
+    /* --- Layout --- */
+    main { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+    section { margin-bottom: 40px; }
+
+    h2 {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    /* --- Upload Zone --- */
+    .upload-zone {
+      border: 2px dashed var(--color-border);
+      border-radius: var(--radius);
+      padding: 48px 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color var(--transition), background var(--transition);
+      background: var(--color-surface);
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: var(--color-accent);
+      background: var(--color-surface-2);
+    }
+    .upload-zone .upload-icon { font-size: 40px; margin-bottom: 12px; display: block; }
+    .upload-zone p { color: var(--color-text-muted); font-size: 13px; margin-top: 8px; }
+    .upload-zone .file-name {
+      display: none;
+      margin-top: 12px;
+      color: var(--color-success);
+      font-weight: 600;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    #file-input { display: none; }
+
+    /* --- Buttons --- */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: var(--radius);
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background var(--transition), opacity var(--transition);
+    }
+    .btn-primary {
+      background: var(--color-accent);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--color-accent-hover); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-secondary {
+      background: var(--color-surface-2);
+      color: var(--color-text-muted);
+      border: 1px solid var(--color-border);
+    }
+    .btn-secondary:hover { color: var(--color-text); border-color: var(--color-accent); }
+
+    .actions-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      align-items: center;
+    }
+
+    /* --- KPI Cards --- */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .kpi-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+    }
+    .kpi-card .kpi-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      margin-bottom: 8px;
+    }
+    .kpi-card .kpi-value {
+      font-size: 28px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+    .kpi-card.critical .kpi-value { color: var(--color-critical); }
+    .kpi-card.high .kpi-value { color: var(--color-high); }
+    .kpi-card.arr .kpi-value { color: var(--color-accent-hover); }
+    .kpi-card.total .kpi-value { color: var(--color-text); }
+
+    /* --- Risk Table --- */
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--color-border);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    thead th {
+      background: var(--color-surface-2);
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+    }
+    tbody tr {
+      border-top: 1px solid var(--color-border);
+      transition: background var(--transition);
+      cursor: pointer;
+    }
+    tbody tr:hover { background: var(--color-surface-2); }
+    tbody tr.selected { background: rgba(92, 107, 192, 0.15); }
+    tbody td { padding: 12px 16px; vertical-align: middle; }
+    tbody td.rank { color: var(--color-text-muted); font-family: var(--font-mono); }
+    tbody td.account-name { font-weight: 600; }
+    tbody td.score { font-family: var(--font-mono); font-weight: 700; }
+    tbody td.arr { font-family: var(--font-mono); text-align: right; }
+
+    /* --- Risk Badges --- */
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    .badge-CRITICAL { background: rgba(239,83,80,.2); color: var(--color-critical); }
+    .badge-HIGH     { background: rgba(255,167,38,.2); color: var(--color-high); }
+    .badge-MEDIUM   { background: rgba(255,238,88,.2); color: #e6d800; }
+    .badge-LOW      { background: rgba(102,187,106,.2); color: var(--color-low); }
+
+    .segment-badge {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      font-family: var(--font-mono);
+    }
+
+    /* --- Score Bar --- */
+    .score-bar-wrap { display: flex; align-items: center; gap: 10px; }
+    .score-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--color-border);
+      border-radius: 3px;
+      overflow: hidden;
+      max-width: 80px;
+    }
+    .score-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+
+    /* --- Playbook Panel --- */
+    #playbook-panel {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 24px;
+      display: none;
+    }
+    #playbook-panel.visible { display: block; }
+    .playbook-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+    .playbook-account-name { font-size: 18px; font-weight: 700; }
+    .playbook-summary {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      margin-top: 4px;
+      max-width: 700px;
+      line-height: 1.5;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      font-size: 20px;
+      padding: 4px 8px;
+      border-radius: var(--radius);
+      transition: color var(--transition);
+    }
+    .close-btn:hover { color: var(--color-text); }
+
+    /* KPI Impact Strip */
+    .kpi-strip {
+      display: flex;
+      gap: 24px;
+      background: var(--color-surface-2);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .kpi-strip-item { display: flex; flex-direction: column; gap: 2px; }
+    .kpi-strip-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-muted); }
+    .kpi-strip-value { font-size: 18px; font-weight: 700; font-family: var(--font-mono); }
+    .kpi-strip-value.danger { color: var(--color-critical); }
+    .kpi-strip-value.success { color: var(--color-success); }
+
+    /* Action Cards */
+    .action-list { display: flex; flex-direction: column; gap: 10px; }
+    .action-card {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      display: grid;
+      grid-template-columns: 36px 1fr auto;
+      gap: 12px;
+      align-items: start;
+      transition: border-color var(--transition);
+    }
+    .action-card:hover { border-color: var(--color-accent); }
+    .action-priority {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--color-surface-2);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .action-title { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+    .action-desc { font-size: 12px; color: var(--color-text-muted); line-height: 1.5; }
+    .action-meta { text-align: right; white-space: nowrap; }
+    .action-owner {
+      font-size: 11px;
+      color: var(--color-accent-hover);
+      font-weight: 600;
+    }
+    .action-timeline {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+    .action-trigger {
+      margin-top: 6px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--color-text-muted);
+      background: var(--color-surface-2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    /* --- Loading & Error States --- */
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid var(--color-border);
+      border-top-color: var(--color-accent-hover);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .alert {
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      margin-top: 16px;
+      display: none;
+    }
+    .alert-error {
+      background: rgba(239,83,80,.1);
+      border: 1px solid rgba(239,83,80,.3);
+      color: #ef9a9a;
+    }
+
+    /* --- Tooltip for days to renewal --- */
+    .renewal-warning { color: var(--color-high); font-size: 11px; font-family: var(--font-mono); }
+
+    /* --- Hidden state --- */
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <div class="logo">Churn Early Warning System</div>
+      <div class="subtitle">Customer Risk Scoring + Playbook Generator</div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- Upload Section -->
+    <section id="section-upload">
+      <h2>Analyse starten</h2>
+      <div class="upload-zone" id="upload-zone">
+        <span class="upload-icon">📂</span>
+        <strong>CSV-Datei hier ablegen</strong>
+        <p>oder klicken zum Auswählen</p>
+        <div class="file-name" id="file-name-display"></div>
+        <input type="file" id="file-input" accept=".csv,text/csv" />
+      </div>
+
+      <div class="actions-row">
+        <button class="btn btn-primary" id="btn-analyze" disabled>
+          <span class="spinner" id="spinner"></span>
+          <span id="btn-label">Analysieren</span>
+        </button>
+        <a href="/api/sample" class="btn btn-secondary" download>
+          ⬇ Sample CSV herunterladen
+        </a>
+        <div class="alert alert-error" id="error-alert"></div>
+      </div>
+    </section>
+
+    <!-- KPI Summary -->
+    <section id="section-kpis" class="hidden">
+      <h2>Executive Summary</h2>
+      <div class="kpi-grid">
+        <div class="kpi-card critical">
+          <div class="kpi-label">Critical Risk</div>
+          <div class="kpi-value" id="kpi-critical">—</div>
+        </div>
+        <div class="kpi-card high">
+          <div class="kpi-label">High Risk</div>
+          <div class="kpi-value" id="kpi-high">—</div>
+        </div>
+        <div class="kpi-card arr">
+          <div class="kpi-label">Gesamt ARR at Risk</div>
+          <div class="kpi-value" id="kpi-arr">—</div>
+        </div>
+        <div class="kpi-card total">
+          <div class="kpi-label">Analysierte Accounts</div>
+          <div class="kpi-value" id="kpi-total">—</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Risk Ranking Table -->
+    <section id="section-ranking" class="hidden">
+      <h2 id="ranking-title">Top Accounts at Risk</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Account</th>
+              <th>Segment</th>
+              <th>Risk Level</th>
+              <th>Score</th>
+              <th>ARR at Risk</th>
+              <th>Renewal</th>
+              <th>Hauptsignal</th>
+            </tr>
+          </thead>
+          <tbody id="ranking-tbody"></tbody>
+        </table>
+      </div>
+      <p style="margin-top:10px; font-size:12px; color:var(--color-text-muted);">
+        Klicken Sie auf einen Account, um das Playbook zu öffnen.
+      </p>
+    </section>
+
+    <!-- Playbook Panel -->
+    <section id="section-playbook" class="hidden">
+      <h2>Playbook</h2>
+      <div id="playbook-panel">
+        <div class="playbook-header">
+          <div>
+            <div class="playbook-account-name" id="pb-account-name">—</div>
+            <div class="playbook-summary" id="pb-summary">—</div>
+          </div>
+          <button class="close-btn" id="btn-close-playbook" title="Schließen">✕</button>
+        </div>
+
+        <div class="kpi-strip" id="pb-kpi-strip"></div>
+
+        <div class="action-list" id="pb-actions"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // ---------------------------------------------------------------
+    // State
+    // ---------------------------------------------------------------
+    let analysisResult = null;
+    let selectedAccountId = null;
+
+    // ---------------------------------------------------------------
+    // DOM References
+    // ---------------------------------------------------------------
+    const uploadZone    = document.getElementById('upload-zone');
+    const fileInput     = document.getElementById('file-input');
+    const fileNameDisplay = document.getElementById('file-name-display');
+    const btnAnalyze    = document.getElementById('btn-analyze');
+    const btnLabel      = document.getElementById('btn-label');
+    const spinner       = document.getElementById('spinner');
+    const errorAlert    = document.getElementById('error-alert');
+
+    const sectionKpis     = document.getElementById('section-kpis');
+    const sectionRanking  = document.getElementById('section-ranking');
+    const sectionPlaybook = document.getElementById('section-playbook');
+    const rankingTitle    = document.getElementById('ranking-title');
+    const rankingTbody    = document.getElementById('ranking-tbody');
+    const playbookPanel   = document.getElementById('playbook-panel');
+    const btnClosePlaybook = document.getElementById('btn-close-playbook');
+
+    // ---------------------------------------------------------------
+    // Upload Interaction
+    // ---------------------------------------------------------------
+    uploadZone.addEventListener('click', () => fileInput.click());
+
+    uploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadZone.classList.add('drag-over');
+    });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file) handleFileSelected(file);
+    });
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files[0]) handleFileSelected(fileInput.files[0]);
+    });
+
+    function handleFileSelected(file) {
+      fileNameDisplay.textContent = `📄 ${file.name}`;
+      fileNameDisplay.style.display = 'block';
+      btnAnalyze.disabled = false;
+      hideError();
+    }
+
+    // ---------------------------------------------------------------
+    // Analyze
+    // ---------------------------------------------------------------
+    btnAnalyze.addEventListener('click', runAnalysis);
+
+    async function runAnalysis() {
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      setLoading(true);
+      hideError();
+      hideResults();
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const response = await fetch('/api/analyze', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({ detail: response.statusText }));
+          throw new Error(err.detail || `HTTP ${response.status}`);
+        }
+
+        analysisResult = await response.json();
+        renderResults(analysisResult);
+
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    // ---------------------------------------------------------------
+    // Render Results
+    // ---------------------------------------------------------------
+    function renderResults(data) {
+      renderKpis(data.summary, data.ranked_accounts.length);
+      renderRanking(data.ranked_accounts);
+
+      sectionKpis.classList.remove('hidden');
+      sectionRanking.classList.remove('hidden');
+
+      sectionKpis.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function renderKpis(summary, accountCount) {
+      document.getElementById('kpi-critical').textContent = summary.critical_count;
+      document.getElementById('kpi-high').textContent = summary.high_count;
+      document.getElementById('kpi-arr').textContent = formatCurrency(summary.total_arr_at_risk);
+      document.getElementById('kpi-total').textContent = summary.total_analyzed;
+      rankingTitle.textContent = `Top ${accountCount} Accounts at Risk (${summary.run_date})`;
+    }
+
+    function renderRanking(accounts) {
+      rankingTbody.innerHTML = '';
+      accounts.forEach(acc => {
+        const tr = document.createElement('tr');
+        tr.dataset.accountId = acc.account_id;
+
+        const renewalHtml = acc.days_to_renewal != null
+          ? `<span class="renewal-warning">⚠ ${acc.days_to_renewal}d</span>`
+          : '<span style="color:var(--color-text-muted)">—</span>';
+
+        const scoreColor = scoreToColor(acc.risk_score);
+
+        tr.innerHTML = `
+          <td class="rank">${acc.rank}</td>
+          <td class="account-name">${escHtml(acc.account_name)}</td>
+          <td><span class="segment-badge">${acc.segment}</span></td>
+          <td><span class="badge badge-${acc.risk_level}">${acc.risk_level}</span></td>
+          <td class="score">
+            <div class="score-bar-wrap">
+              <span>${acc.risk_score.toFixed(1)}</span>
+              <div class="score-bar">
+                <div class="score-bar-fill" style="width:${acc.risk_score}%;background:${scoreColor}"></div>
+              </div>
+            </div>
+          </td>
+          <td class="arr">€${formatNumber(acc.arr_at_risk)}</td>
+          <td>${renewalHtml}</td>
+          <td style="color:var(--color-text-muted);font-size:12px;max-width:280px">${escHtml(acc.top_reason)}</td>
+        `;
+
+        tr.addEventListener('click', () => openPlaybook(acc.account_id));
+        rankingTbody.appendChild(tr);
+      });
+    }
+
+    // ---------------------------------------------------------------
+    // Playbook Panel
+    // ---------------------------------------------------------------
+    function openPlaybook(accountId) {
+      if (!analysisResult) return;
+
+      // Highlight selected row
+      document.querySelectorAll('#ranking-tbody tr').forEach(tr => {
+        tr.classList.toggle('selected', tr.dataset.accountId === accountId);
+      });
+
+      const playbook = analysisResult.playbooks.find(p => p.account_id === accountId);
+      if (!playbook) return;
+
+      selectedAccountId = accountId;
+      renderPlaybook(playbook);
+
+      sectionPlaybook.classList.remove('hidden');
+      playbookPanel.classList.add('visible');
+      playbookPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function renderPlaybook(pb) {
+      document.getElementById('pb-account-name').innerHTML =
+        `${escHtml(pb.account_name)} <span class="badge badge-${pb.risk_level}">${pb.risk_level}</span>`;
+      document.getElementById('pb-summary').textContent = pb.summary;
+
+      // KPI Strip
+      const strip = document.getElementById('pb-kpi-strip');
+      strip.innerHTML = '';
+      if (pb.kpi_impact) {
+        const k = pb.kpi_impact;
+        strip.innerHTML = `
+          <div class="kpi-strip-item">
+            <span class="kpi-strip-label">ARR at Risk</span>
+            <span class="kpi-strip-value danger">€${formatNumber(k.arr_at_risk)}</span>
+          </div>
+          <div class="kpi-strip-item">
+            <span class="kpi-strip-label">Expected Save bei Intervention</span>
+            <span class="kpi-strip-value success">€${formatNumber(k.expected_arr_saved)}</span>
+          </div>
+          <div class="kpi-strip-item">
+            <span class="kpi-strip-label">Retention-Wahrscheinlichkeit</span>
+            <span class="kpi-strip-value success">${(k.estimated_retention_probability * 100).toFixed(0)}%</span>
+          </div>
+          <div class="kpi-strip-item">
+            <span class="kpi-strip-label">Churn-Prob. ohne Eingriff</span>
+            <span class="kpi-strip-value danger">${(k.churn_probability_without_action * 100).toFixed(1)}%</span>
+          </div>
+          ${k.payback_period_days ? `
+          <div class="kpi-strip-item">
+            <span class="kpi-strip-label">Payback Period</span>
+            <span class="kpi-strip-value">${k.payback_period_days}d</span>
+          </div>` : ''}
+        `;
+      }
+
+      // Action Items
+      const actionList = document.getElementById('pb-actions');
+      actionList.innerHTML = '';
+      pb.action_items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'action-card';
+        card.innerHTML = `
+          <div class="action-priority">${item.priority}</div>
+          <div>
+            <div class="action-title">${escHtml(item.title)}</div>
+            <div class="action-desc">${escHtml(item.description)}</div>
+            <span class="action-trigger">${escHtml(item.triggered_by)}</span>
+          </div>
+          <div class="action-meta">
+            <div class="action-owner">${escHtml(item.recommended_owner)}</div>
+            <div class="action-timeline">⏱ ${item.suggested_timeline_days} Tage</div>
+          </div>
+        `;
+        actionList.appendChild(card);
+      });
+    }
+
+    btnClosePlaybook.addEventListener('click', () => {
+      sectionPlaybook.classList.add('hidden');
+      playbookPanel.classList.remove('visible');
+      document.querySelectorAll('#ranking-tbody tr').forEach(tr => tr.classList.remove('selected'));
+      selectedAccountId = null;
+    });
+
+    // ---------------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------------
+    function setLoading(loading) {
+      btnAnalyze.disabled = loading;
+      spinner.style.display = loading ? 'block' : 'none';
+      btnLabel.textContent = loading ? 'Analysiere...' : 'Analysieren';
+    }
+
+    function showError(msg) {
+      errorAlert.textContent = `Fehler: ${msg}`;
+      errorAlert.style.display = 'block';
+    }
+
+    function hideError() {
+      errorAlert.style.display = 'none';
+    }
+
+    function hideResults() {
+      sectionKpis.classList.add('hidden');
+      sectionRanking.classList.add('hidden');
+      sectionPlaybook.classList.add('hidden');
+    }
+
+    function formatCurrency(value) {
+      if (value >= 1_000_000) return `€${(value / 1_000_000).toFixed(2)}M`;
+      if (value >= 1_000) return `€${Math.round(value / 1_000)}k`;
+      return `€${Math.round(value)}`;
+    }
+
+    function formatNumber(value) {
+      return new Intl.NumberFormat('de-DE').format(Math.round(value));
+    }
+
+    function escHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function scoreToColor(score) {
+      if (score >= 75) return 'var(--color-critical)';
+      if (score >= 50) return 'var(--color-high)';
+      if (score >= 25) return 'var(--color-medium)';
+      return 'var(--color-low)';
+    }
+  </script>
+</body>
+</html>

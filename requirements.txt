@@ -5,9 +5,15 @@
 pandas==2.2.3
 pydantic==2.10.6
 
+# --- Web API ---
+fastapi==0.115.8
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+
 # --- Testing ---
 pytest==8.3.5
 pytest-cov==6.0.0
+httpx==0.28.1
 
 # --- Code Quality ---
 ruff==0.9.9
