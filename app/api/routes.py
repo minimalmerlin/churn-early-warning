@@ -34,7 +34,10 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-_SAMPLE_CSV_PATH = Path("data/sample/customer_events_sample.csv")
+# Absoluter Pfad – relativ zu dieser Datei, nicht zum Working Directory.
+# Warum: Vercel und andere Serverless-Umgebungen garantieren kein CWD.
+_PROJECT_ROOT = Path(__file__).parent.parent.parent
+_SAMPLE_CSV_PATH = _PROJECT_ROOT / "data" / "sample" / "customer_events_sample.csv"
 _MAX_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024  # 10 MB
 
 

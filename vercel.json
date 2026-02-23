@@ -1,0 +1,19 @@
+{
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/index"
+    }
+  ],
+  "env": {
+    "CHURN_LOG_LEVEL": "WARNING",
+    "CHURN_TOP_N_ACCOUNTS": "20",
+    "CHURN_MIN_SCORE_THRESHOLD": "25.0"
+  }
+}

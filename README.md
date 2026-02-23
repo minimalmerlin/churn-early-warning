@@ -129,8 +129,25 @@ pytest tests/ -v --cov=src
 
 ```bash
 docker build -t churn-pipeline .
-docker run -p 8000:8000 -e CHURN_TOP_N_ACCOUNTS=10 churn-pipeline
+docker run -p 8000:8000 churn-pipeline
 ```
+
+### 6. Vercel Deployment
+
+```bash
+# Vercel CLI installieren
+npm install -g vercel
+
+# Deployment (erster Push)
+vercel
+
+# Alle weiteren Pushes
+vercel --prod
+```
+
+Alternativ: GitHub-Repo mit Vercel verbinden → automatisches Deployment bei jedem `git push`.
+
+> **Hinweis:** `vercel.json` und `api/index.py` sind bereits konfiguriert.
 
 ---
 

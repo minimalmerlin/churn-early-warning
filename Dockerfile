@@ -23,10 +23,13 @@ USER appuser
 # Output-Verzeichnis anlegen
 RUN mkdir -p output
 
-# Umgebungsvariablen (Defaults, überschreibbar via docker run -e)
+# Umgebungsvariablen (Defaults, überschreibbar via docker run -e / Railway / Render)
 ENV CHURN_LOG_LEVEL=INFO
-ENV CHURN_DATA_SOURCE=data/sample/customer_events_sample.csv
 ENV CHURN_TOP_N_ACCOUNTS=20
 ENV CHURN_OUTPUT_DIR=output
+# HOST=0.0.0.0 notwendig für Docker: Container muss auf allen Interfaces lauschen
+ENV HOST=0.0.0.0
+ENV PORT=8000
 
-CMD ["python", "main.py"]
+# Web-Server starten (nicht CLI). PORT wird von run_server.py via $PORT gelesen.
+CMD ["python", "run_server.py"]
